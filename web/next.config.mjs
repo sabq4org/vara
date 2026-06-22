@@ -6,3 +6,7 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
+// Enables Cloudflare bindings (env/secrets) during `next dev` via OpenNext.
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+initOpenNextCloudflareForDev();
