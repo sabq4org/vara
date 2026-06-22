@@ -38,11 +38,14 @@ export function LiveMinute({
 
   const clock = liveMinuteLabel(minute, match.phase);
   const half = withHalf && !isBreakPhase(match.phase) ? phaseLabel(match.phase) : null;
+  // The clock is LTR only when it's a numeric minute ("67′", "45+2′"); break
+  // states ("بين الشوطين", "مباشر") are Arabic and must stay RTL.
+  const numericClock = /\d/.test(clock);
 
   return (
-    <span className={`ltr ${className ?? ""}`}>
+    <span className={className}>
       {half ? <span className="opacity-80">{half} · </span> : null}
-      {clock}
+      {numericClock ? <span className="ltr">{clock}</span> : clock}
     </span>
   );
 }

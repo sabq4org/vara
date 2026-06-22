@@ -114,7 +114,9 @@ function MomentumChart({
     `${Math.min(100, Math.max(0, (minute / maxMinute) * 100))}%`;
 
   return (
-    <div className="mt-4">
+    // A time axis reads left→right (0′→90′); force LTR so bars, markers and the
+    // axis labels stay aligned regardless of the surrounding RTL layout.
+    <div className="mt-4" dir="ltr">
       {/* home markers (above) */}
       <MarkerRow markers={homeMarkers} leftFor={leftFor} side="home" />
 
@@ -180,6 +182,7 @@ function MarkerRow({
           <MarkerIcon glyph={m.glyph} />
           {/* tooltip */}
           <div
+            dir="rtl"
             className={`pointer-events-none absolute left-1/2 z-20 hidden -translate-x-1/2 whitespace-nowrap rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[11px] shadow-lg group-hover/mk:block ${
               side === "home" ? "top-full mt-1.5" : "bottom-full mb-1.5"
             }`}

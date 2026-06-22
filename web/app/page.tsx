@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { vara } from "@/lib/vara";
 import { FEATURED, pickHeroMatch, trulyLive, upcoming, teamGroupMap, groupForMatch, isInProgress } from "@/lib/featured";
+import { formatFullDate } from "@/lib/format";
 import type { BracketStage, Match, MatchDayGroup, Standings, TopScorer } from "@/lib/types";
 import { HeroMatch } from "@/components/home/HeroMatch";
 import { NextUp } from "@/components/home/NextUp";
@@ -15,6 +16,26 @@ import { AutoRefresh } from "@/components/AutoRefresh";
 import { ErrorState } from "@/components/States";
 
 export const dynamic = "force-dynamic";
+
+/** Group upcoming fixtures into one card per calendar day (soonest day first). */
+function groupByDay(
+  matches: Match[],
+  comp: { name: string; logo?: string },
+): MatchDayGroup[] {
+  const map = new Map<string, Match[]>();
+  for (const m of matches) {
+    const key = new Date(m.startTime).toLocaleDateString("en-CA");
+    const arr = map.get(key);
+    if (arr) arr.push(m);
+    else map.set(key, [m]);
+  }
+  return [...map.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, ms]) => ({
+      competition: { id: `day-${key}`, name: formatFullDate(ms[0].startTime), logo: comp.logo },
+      matches: ms,
+    }));
+}
 
 function SectionHead({
   title,
@@ -53,7 +74,7 @@ export default async function HomePage() {
   const id = FEATURED.competitionId;
   const [liveR, nextR, standR, todayR, resultsR, scorersR, bracketR] = await Promise.allSettled([
     vara.matches(id, "live"),
-    vara.matches(id, "next", 8),
+    vara.matches(id, "next", 64),
     vara.standings(id),
     vara.matchesToday(),
     vara.matches(id, "last", 12),
@@ -79,6 +100,10 @@ export default async function HomePage() {
 
   const liveNow = trulyLive(live);
   const upNext = upcoming(next);
+  const upcomingGroups = groupByDay(upNext, {
+    name: standings?.competition.name ?? FEATURED.name,
+    logo: standings?.competition.logo,
+  });
   const hero = pickHeroMatch(live, next);
   const heroInProgress = hero ? hero.state !== "live" && isInProgress(hero) : false;
   const heroPlaying = hero ? hero.state === "live" || heroInProgress : false;
@@ -108,7 +133,7 @@ export default async function HomePage() {
       {today.length ? (
         <section className="animate-rise">
           <SectionHead title="مباريات اليوم" subtitle="كل مباريات اليوم بالتوقيت المحلي" href="/live" cta="المباشر" />
-          <TodayMatches groups={today} />
+          <TodayMatches groups={today} upcomingGroups={upcomingGroups} />
         </section>
       ) : null}
 

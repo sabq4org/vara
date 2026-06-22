@@ -62,7 +62,7 @@ function Stat({
 }) {
   return (
     <div className="card relative overflow-hidden px-4 py-3.5">
-      <div className="absolute -left-3 -top-3 text-line/60">{icon}</div>
+      <div className="absolute -start-3 -top-3 text-line/60">{icon}</div>
       <div className={`ltr text-3xl font-black leading-none tabular-nums ${accent ? "text-accent-grad" : ""}`}>
         {value}
       </div>
@@ -95,9 +95,9 @@ function ScorerStat({ scorer }: { scorer: TopScorer }) {
         <div className="flex items-center gap-1 text-[10px] font-bold text-gold">
           <IconBoot /> الهدّاف
         </div>
-        <div className="truncate text-sm font-bold">{scorer.player.name}</div>
-        <div className="ltr text-xs text-muted">
-          <span className="font-extrabold text-accent">{scorer.total}</span> أهداف
+        <div className="truncate text-sm font-bold" dir="auto">{scorer.player.name}</div>
+        <div className="text-xs text-muted">
+          <span className="ltr font-extrabold text-accent">{scorer.total}</span> أهداف
         </div>
       </div>
     </Link>

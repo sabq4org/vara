@@ -121,7 +121,7 @@ export function CareerTable({ seasons }: { seasons: PlayerSeasonRow[] }) {
                   <div className="truncate text-[13px] font-semibold leading-tight">
                     {s.competition ?? "—"}
                   </div>
-                  <div className="ltr truncate text-[11px] text-muted">
+                  <div className="truncate text-[11px] text-muted" dir="auto">
                     {[s.seasonName, s.teamName].filter(Boolean).join(" · ")}
                   </div>
                 </div>
@@ -156,7 +156,7 @@ export function Honours({ trophies }: { trophies: PlayerTrophy[] }) {
             <Logo url={t.competitionLogo} alt={t.competition ?? ""} size={28} />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold">{t.competition ?? "—"}</div>
-              <div className="ltr truncate text-[11px] text-muted">
+              <div className="truncate text-[11px] text-muted" dir="auto">
                 {[t.seasonName, t.teamName].filter(Boolean).join(" · ")}
               </div>
             </div>

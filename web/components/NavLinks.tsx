@@ -12,13 +12,19 @@ const LINKS = [
 
 export function NavLinks() {
   const pathname = usePathname();
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  // A link matches when the path is exactly it or sits under it. The most
+  // specific match wins, so /competitions/732 lights up "كأس العالم" only —
+  // not the broader "البطولات" (/competitions).
+  const matches = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+  const activeHref = LINKS.map((l) => l.href)
+    .filter(matches)
+    .sort((a, b) => b.length - a.length)[0];
 
   return (
     <nav className="flex items-center gap-1 overflow-x-auto text-sm">
       {LINKS.map((l) => {
-        const active = isActive(l.href);
+        const active = l.href === activeHref;
         return (
           <Link
             key={l.href}

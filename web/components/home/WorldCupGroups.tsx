@@ -24,7 +24,7 @@ export function WorldCupGroups({ standings }: { standings: Standings }) {
               <span className="h-1.5 w-1.5 rounded-full bg-accent shadow-[0_0_8px_rgb(var(--c-accent))]" />
               {name}
             </span>
-            <span className="ltr flex gap-2 pe-0.5 text-[9px] font-bold text-muted/80">
+            <span className="flex gap-2 pe-0.5 text-[9px] font-bold text-muted/80">
               <span className="w-9 text-center">آخر 5</span>
               <span className="w-6 text-center">±</span>
               <span className="w-5 text-center">نقاط</span>

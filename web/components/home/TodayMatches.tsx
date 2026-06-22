@@ -25,28 +25,32 @@ function LiveDot() {
 const EMPTY: Record<Filter, string> = {
   live: "لا توجد مباريات مباشرة الآن",
   all: "لا توجد مباريات اليوم",
-  upcoming: "لا توجد مباريات قادمة اليوم",
+  upcoming: "لا توجد مباريات قادمة",
 };
 
 /**
  * Today's fixtures with a segmented filter: مباشر (live) / اليوم (all) /
- * القادمة (upcoming). Filtering is state-based (no clock) to stay
- * hydration-safe. Defaults to the live tab when matches are in play.
+ * القادمة (upcoming). The live/today tabs read from today's grouped matches;
+ * القادمة shows the rest of the tournament's upcoming fixtures, grouped by day.
+ * Filtering is state-based (no clock) to stay hydration-safe; defaults to the
+ * live tab when matches are in play.
  */
-export function TodayMatches({ groups }: { groups: MatchDayGroup[] }) {
+export function TodayMatches({
+  groups,
+  upcomingGroups = [],
+}: {
+  groups: MatchDayGroup[];
+  upcomingGroups?: MatchDayGroup[];
+}) {
   const live = useMemo(() => filterGroups(groups, (m) => m.state === "live"), [groups]);
-  const upcoming = useMemo(
-    () => filterGroups(groups, (m) => m.state === "scheduled"),
-    [groups],
-  );
 
   const liveCount = useMemo(
     () => live.reduce((n, g) => n + g.matches.length, 0),
     [live],
   );
   const upcomingCount = useMemo(
-    () => upcoming.reduce((n, g) => n + g.matches.length, 0),
-    [upcoming],
+    () => upcomingGroups.reduce((n, g) => n + g.matches.length, 0),
+    [upcomingGroups],
   );
   const allCount = useMemo(
     () => groups.reduce((n, g) => n + g.matches.length, 0),
@@ -61,7 +65,7 @@ export function TodayMatches({ groups }: { groups: MatchDayGroup[] }) {
     { key: "upcoming", label: "القادمة", count: upcomingCount },
   ];
 
-  const shown = filter === "live" ? live : filter === "upcoming" ? upcoming : groups;
+  const shown = filter === "live" ? live : filter === "upcoming" ? upcomingGroups : groups;
 
   return (
     <div>

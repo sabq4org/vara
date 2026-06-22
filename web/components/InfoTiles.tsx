@@ -6,7 +6,7 @@ export function InfoTiles({
 }) {
   return (
     <div
-      className="card grid divide-x divide-line/60 overflow-hidden [direction:rtl]"
+      className="card grid overflow-hidden [&>*+*]:border-s [&>*+*]:border-line/60"
       style={{ gridTemplateColumns: `repeat(${tiles.length}, minmax(0, 1fr))` }}
     >
       {tiles.map((t, i) => (
