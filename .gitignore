@@ -13,6 +13,10 @@ build/
 *.log
 bun.lockb
 
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+
 # macOS
 .DS_Store
 

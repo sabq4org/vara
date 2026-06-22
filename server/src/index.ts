@@ -105,12 +105,10 @@ function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-// Audience timezone offset (minutes east of UTC). Defaults to KSA (+03:00) so
-// "today" follows the local calendar day, not UTC. Override with VARA_TZ_OFFSET_MIN.
-const TZ_OFFSET_MIN = Number(process.env.VARA_TZ_OFFSET_MIN ?? 180);
-
-// [start, end) epoch-ms bounds of the current local calendar day.
-function localDayWindow(offsetMin: number = TZ_OFFSET_MIN): { startMs: number; endMs: number } {
+// [start, end) epoch-ms bounds of the current local calendar day. Defaults to
+// KSA (+03:00) so "today" follows the local calendar day, not UTC. Override with
+// VARA_TZ_OFFSET_MIN.
+function localDayWindow(offsetMin: number = config.tzOffsetMin): { startMs: number; endMs: number } {
   const DAY = 86_400_000;
   const shifted = Date.now() + offsetMin * 60_000; // wall-clock as if UTC
   const startMs = Math.floor(shifted / DAY) * DAY - offsetMin * 60_000;
@@ -363,10 +361,27 @@ app.get("/v1/referees/:id", async (c) => {
   }
 });
 
-// Serve the static preview UI.
+// Landing page. Under Bun (local dev) we serve the rich preview from disk; on
+// Cloudflare Workers (no filesystem) we return a small API landing instead.
+const WORKER_LANDING = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VARA Edge API</title>
+<style>body{font-family:-apple-system,Segoe UI,Tahoma,sans-serif;background:#0a0e14;color:#eaf0f7;
+display:grid;place-items:center;min-height:100vh;margin:0}main{text-align:center;padding:24px}
+.logo{font-weight:800;font-size:34px;letter-spacing:1px}.logo span{color:#00e0a4}
+p{color:#8b97a8}a{color:#00e0a4}</style></head>
+<body><main><div class="logo">VA<span>R</span>A Edge</div>
+<p>واجهة برمجية موحّدة لبيانات الرياضة.</p>
+<p><a href="/health">/health</a> · <a href="/v1/matches/today">/v1/matches/today</a></p>
+</main></body></html>`;
+
 app.get("/", async (c) => {
-  const file = Bun.file(new URL("../public/index.html", import.meta.url));
-  return c.html(await file.text());
+  const bun = (globalThis as { Bun?: { file: (u: URL) => { text: () => Promise<string> } } }).Bun;
+  if (bun) {
+    const file = bun.file(new URL("../public/index.html", import.meta.url));
+    return c.html(await file.text());
+  }
+  return c.html(WORKER_LANDING);
 });
 
 console.log(`VARA edge listening on http://localhost:${config.port}`);

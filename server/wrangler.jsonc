@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vara-edge",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "PRIMARY_PROVIDER": "sportmonks"
+  }
+}
